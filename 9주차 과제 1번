@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+int add(int x, int y){
+	return x+y;
+}
+
+int subtract(int x, int y){
+	int minus;
+	minus = x-y;
+	if(minus<0)
+		minus = minus*(-1);
+	return minus;
+}
+
+int multiples(int x, int y){
+	return x*y;
+}
+
+int main(){ //*
+	int a, b;
+	scanf("%d %d", &a, &b);
+	printf("%d ", add(a, b));
+	printf("%d ", subtract(a, b));
+	printf("%d", multiples(a, b));
+}
