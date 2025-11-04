@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int *arr = NULL;
+
+    // int 크기 × 3 만큼 동적 메모리 3칸 할당
+    arr = (int *)malloc(sizeof(int) * 3);
+    if (arr == NULL) {
+        printf("Memory allocation problem!\n");
+        return -1;
+    }
+
+    // 값 저장
+    arr[0] = 100;
+    arr[1] = 101;
+    arr[2] = 102;
+
+    // 값 출력
+    printf("Value : %d\n", arr[0]);
+    printf("Value : %d\n", arr[1]);
+    printf("Value : %d\n", arr[2]);
+
+    // 메모리 해제
+    free(arr);
+    arr = NULL;
+
+    return 0;
+}
