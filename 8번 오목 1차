@@ -1,0 +1,156 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#ifdef _WIN32
+#include <windows.h>   // Sleep(1000)
+#else
+#include <unistd.h>    // sleep(1)
+#endif
+
+#define MAX_NAME 32
+#define COLOR_BLACK 1
+#define COLOR_WHITE 2
+
+typedef struct {
+    char name[MAX_NAME];  // 플레이어 닉네임
+    int color;            // 흑/백 구분용 (1=흑, 2=백)
+} Player;
+
+/* ===== 함수 프로토타입 ===== */
+void clear_screen(void);
+void input_player_names(Player *p1, Player *p2);
+int  show_main_menu(const Player *p1, const Player *p2);
+void countdown_3sec(void);
+void run_game(const Player *p1, const Player *p2);
+void draw_board(void);
+
+int main(void) {
+    Player p1 = { "", COLOR_BLACK };
+    Player p2 = { "", COLOR_WHITE };
+
+    // 1) 사용자1/2 닉네임 입력
+    input_player_names(&p1, &p2);
+
+    while (1) {
+        // 2) 메인 메뉴
+        int choice = show_main_menu(&p1, &p2);
+
+        if (choice == 1) {
+            clear_screen();
+            printf("게임을 시작합니다!\n");
+            countdown_3sec();   // 3, 2, 1 카운트 후
+
+            run_game(&p1, &p2); // 2단계: 바둑판 화면으로 진입
+            // run_game 안에서 게임이 끝난 뒤
+            // 엔터 입력 받고 다시 메뉴로 돌아오게 해둠
+        } else if (choice == 2) {
+            clear_screen();
+            printf("게임을 종료합니다.\n");
+            break;
+        } else {
+            printf("잘못된 입력입니다. 다시 선택하세요.\n");
+        }
+    }
+
+    return 0;
+}
+
+/* ===== 화면 지우기 ===== */
+void clear_screen(void) {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+/* ===== 닉네임 입력 ===== */
+void input_player_names(Player *p1, Player *p2) {
+    clear_screen();
+    printf("=== 오목 게임: 닉네임 입력 ===\n\n");
+
+    printf("사용자 1 (흑돌)의 닉네임을 입력하세요: ");
+    fgets(p1->name, MAX_NAME, stdin);
+    p1->name[strcspn(p1->name, "\n")] = '\0';
+    if (p1->name[0] == '\0')
+        strcpy(p1->name, "Player1");
+
+    printf("사용자 2 (백돌)의 닉네임을 입력하세요: ");
+    fgets(p2->name, MAX_NAME, stdin);
+    p2->name[strcspn(p2->name, "\n")] = '\0';
+    if (p2->name[0] == '\0')
+        strcpy(p2->name, "Player2");
+}
+
+/* ===== 메인 메뉴 ===== */
+int show_main_menu(const Player *p1, const Player *p2) {
+    int choice;
+
+    clear_screen();
+    printf("=== 오목 게임 메인 메뉴 ===\n\n");
+    printf("흑 : %s\n", p1->name);
+    printf("백 : %s\n\n", p2->name);
+
+    printf("1. 게임 시작\n");
+    printf("2. 게임 종료\n\n");
+    printf("메뉴를 선택하세요 (1 or 2): ");
+
+    if (scanf("%d", &choice) != 1) {
+        while (getchar() != '\n'); // 버퍼 비우기
+        return 0;
+    }
+    return choice;
+}
+
+/* ===== 3초 카운트다운 ===== */
+void countdown_3sec(void) {
+    int i;
+    for (i = 3; i >= 1; i--) {
+        printf("%d...\n", i);
+        fflush(stdout);
+#ifdef _WIN32
+        Sleep(1000);  // 1000ms = 1초
+#else
+        sleep(1);     // POSIX
+#endif
+    }
+}
+
+/* ===== 2단계: 바둑판 화면 (게임 루프 자리) ===== */
+void run_game(const Player *p1, const Player *p2) {
+    clear_screen();
+    printf("=== 오목 게임 (2단계: 바둑판) ===\n");
+    printf("흑 : %s / 백 : %s\n\n", p1->name, p2->name);
+
+    draw_board();   // 지금은 단순히 격자만 그려줌
+
+    printf("\n\n(여기서부터는 돌 두기, 키보드 조작 등을 차례대로 추가할 예정입니다.)\n");
+    printf("게임 화면을 종료하고 메뉴로 돌아가려면 Enter를 누르세요.\n");
+
+    while (getchar() != '\n'); // 이전 입력에서 남은 개행 제거
+    getchar();                 // 실제 Enter 기다리기
+}
+
+/* ===== 바둑판 그리기 (19x19 격자 예시) ===== */
+void draw_board(void) {
+    const int SIZE = 19;
+    int r, c;
+
+    // 열 번호
+    printf("   ");
+    for (c = 0; c < SIZE; c++) {
+        printf("%2d", c + 1);
+    }
+    printf("\n");
+
+    for (r = 0; r < SIZE; r++) {
+        printf("%2d ", r + 1);  // 행 번호
+
+        for (c = 0; c < SIZE; c++) {
+            printf("＋");       // 교차점 표시(폰트에 따라 다르게 보일 수 있음)
+        }
+        printf("\n");
+    }
+}
