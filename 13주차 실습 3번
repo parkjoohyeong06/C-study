@@ -1,0 +1,10 @@
+#include <stdio.h>
+#include <math.h>
+
+int main() {
+    double s = sin(3.665191429);  
+    double c = cos(2.094395102); 
+    double t = tan(0.436332312);
+    printf("%g %g %.4f\n", s, c, t);
+    return 0;
+}
