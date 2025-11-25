@@ -1,0 +1,47 @@
+#include <stdio.h>
+#define DIGIT_COUNT 3
+
+void getUserGuess(int guess[]) {
+    printf("0부터 9까지 숫자를 %d개 입력 : ", DIGIT_COUNT);
+    for (int i = 0; i < DIGIT_COUNT; ++i)
+        scanf("%d", &guess[i]);
+}
+
+void evaluateGuess(int answer[], int guess[], int *strike, int *ball) {
+    *strike = *ball = 0;
+    for (int i = 0; i < DIGIT_COUNT; ++i) {
+        if (guess[i] == answer[i]) (*strike)++;
+        else {
+            for (int j = 0; j < DIGIT_COUNT; ++j)
+                if (i != j && guess[i] == answer[j]) (*ball)++;
+        }
+    }
+}
+
+int main() {
+    int answer[DIGIT_COUNT], guess[DIGIT_COUNT], strike, ball, attempt;
+
+    printf("숫자야구의 정답을 입력하세요 : ");
+    scanf("%d %d %d", &answer[0], &answer[1], &answer[2]);
+
+    printf("\n");
+    for (attempt = 1; attempt <= 7; ++attempt) {
+        printf("[%d회차]\n", attempt);
+
+        getUserGuess(guess);
+        evaluateGuess(answer, guess, &strike, &ball);
+
+        printf("[결과]스트라이크 : %d, 볼 : %d\n", strike, ball);
+
+        printf("\n");
+        if (strike == DIGIT_COUNT) {
+            printf("사용자가 승리하였습니다.\n");
+            break;
+        }
+    }
+
+    if (attempt > 7)
+        printf("컴퓨터가 승리하였습니다.\n");
+
+    return 0;
+}
